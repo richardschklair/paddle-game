@@ -1,0 +1,487 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <title>Harry Potter Platformer</title>
+  <style>
+    * { margin: 0; padding: 0; box-sizing: border-box; }
+    body {
+      background: #0a0010;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      height: 100vh;
+      font-family: 'Georgia', serif;
+      color: #f5e6c8;
+      overflow: hidden;
+    }
+    #ui {
+      width: 540px;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      padding: 8px 4px;
+      font-size: 18px;
+    }
+    #lives { color: #e94560; letter-spacing: 4px; }
+    #height-display { color: #ffe680; }
+    #score-display { color: #a0c4ff; }
+    canvas { display: block; border: 2px solid #3a1f5c; }
+  </style>
+</head>
+<body>
+  <div id="ui">
+    <span>Lives: <span id="lives">♥ ♥ ♥</span></span>
+    <span id="height-display">Height: 0 ft</span>
+    <span id="score-display">Score: 0</span>
+  </div>
+  <canvas id="canvas" width="540" height="580"></canvas>
+
+  <script>
+    const canvas = document.getElementById('canvas');
+    const ctx = canvas.getContext('2d');
+    const W = canvas.width, H = canvas.height;
+
+    const livesEl = document.getElementById('lives');
+    const heightEl = document.getElementById('height-display');
+    const scoreEl = document.getElementById('score-display');
+
+    // --- Constants ---
+    const GRAVITY = 0.45;
+    const JUMP_FORCE = -10.5;
+    const MOVE_SPEED = 4;
+    const PLAYER_W = 20, PLAYER_H = 28;
+    const TILE = 20;
+    const WORLD_HEIGHT = 3000; // total world height in px
+    const MAX_HEIGHT_FT = 1000; // feet at the top
+
+    // --- State ---
+    let player, camera, lives, score, state, keys, checkpoints, platforms, stars, particles;
+
+    function init() {
+      lives = 3;
+      score = 0;
+      state = 'playing';
+      keys = {};
+      particles = [];
+      stars = Array.from({ length: 80 }, () => ({
+        x: Math.random() * W,
+        y: Math.random() * H,
+        r: Math.random() * 1.5 + 0.3,
+        alpha: Math.random() * 0.7 + 0.3,
+      }));
+
+      buildWorld();
+      spawnPlayer(platforms[0]);
+      camera = { y: 0 };
+      updateUI();
+    }
+
+    function spawnPlayer(spawnPlatform) {
+      player = {
+        x: spawnPlatform.x + spawnPlatform.w / 2 - PLAYER_W / 2,
+        y: spawnPlatform.y - PLAYER_H,
+        vx: 0,
+        vy: 0,
+        onGround: false,
+        facingRight: true,
+        checkpointIndex: 0,
+      };
+    }
+
+    // --- World generation ---
+    function buildWorld() {
+      platforms = [];
+      checkpoints = [];
+
+      // Ground platform at bottom
+      platforms.push({ x: 160, y: WORLD_HEIGHT - 40, w: 220, h: 16, color: '#4a2a7a', label: 'Hogwarts Entrance' });
+
+      // Sections: ground -> diagon alley -> staircases -> astronomy tower
+      const sections = [
+        { label: 'Diagon Alley',       startY: WORLD_HEIGHT - 340,  color: '#5c3a1e' },
+        { label: 'Moving Staircases',  startY: WORLD_HEIGHT - 900,  color: '#2a3a5c' },
+        { label: 'Astronomy Tower',    startY: WORLD_HEIGHT - 1700, color: '#1a2a1a' },
+        { label: 'The Stars Above',    startY: WORLD_HEIGHT - 2600, color: '#0a0a2a' },
+      ];
+
+      const colors = ['#5c3a1e', '#6b4423', '#2a3a5c', '#3a4a6c', '#1a2a1a', '#2a3a2a', '#0a0a2a', '#1a1a3a'];
+      let y = WORLD_HEIGHT - 200;
+      let x = 160;
+      let colorIdx = 0;
+
+      while (y > 200) {
+        const w = 80 + Math.floor(Math.random() * 100);
+        x = Math.max(20, Math.min(W - w - 20, x + (Math.random() > 0.5 ? 1 : -1) * (40 + Math.random() * 80)));
+        y -= 80 + Math.floor(Math.random() * 60);
+        platforms.push({ x, y, w, h: 14, color: colors[colorIdx % colors.length] });
+        colorIdx++;
+      }
+
+      // Top platform (goal)
+      platforms.push({ x: W / 2 - 80, y: 160, w: 160, h: 16, color: '#ffe680', label: 'Top of the Tower' });
+
+      // Place checkpoints roughly evenly in sections
+      const cpYs = [WORLD_HEIGHT - 340, WORLD_HEIGHT - 900, WORLD_HEIGHT - 1700, WORLD_HEIGHT - 2600];
+      cpYs.forEach((cpY, i) => {
+        const closest = platforms.reduce((best, p) => {
+          const d = Math.abs(p.y - cpY);
+          return d < Math.abs(best.y - cpY) ? p : best;
+        }, platforms[0]);
+        checkpoints.push({
+          x: closest.x + closest.w / 2 - 10,
+          y: closest.y - 36,
+          w: 20, h: 36,
+          activated: i === 0,
+          platform: closest,
+          label: sections[i] ? sections[i].label : 'Checkpoint',
+          index: i,
+        });
+      });
+    }
+
+    function updateUI() {
+      livesEl.textContent = '♥ '.repeat(lives).trim();
+      scoreEl.textContent = `Score: ${score}`;
+    }
+
+    function getHeightFt() {
+      const progress = 1 - (player.y / WORLD_HEIGHT);
+      return Math.max(0, Math.round(progress * MAX_HEIGHT_FT));
+    }
+
+    // --- Input ---
+    document.addEventListener('keydown', e => {
+      keys[e.key] = true;
+      if (['ArrowLeft','ArrowRight','ArrowUp',' '].includes(e.key)) e.preventDefault();
+      if (state === 'gameover' && e.key === 'Enter') init();
+      if (state === 'win' && e.key === 'Enter') init();
+      // Respawn button: R key
+      if (e.key === 'r' || e.key === 'R') respawn();
+    });
+    document.addEventListener('keyup', e => { keys[e.key] = false; });
+
+    function respawn() {
+      if (state !== 'playing') return;
+      const cp = [...checkpoints].filter(c => c.activated).pop();
+      if (!cp) return;
+      player.x = cp.platform.x + cp.platform.w / 2 - PLAYER_W / 2;
+      player.y = cp.platform.y - PLAYER_H;
+      player.vx = 0;
+      player.vy = 0;
+      spawnParticles(player.x + PLAYER_W / 2, player.y, '#ffe680', 12);
+    }
+
+    // --- Particles ---
+    function spawnParticles(x, y, color, count) {
+      for (let i = 0; i < count; i++) {
+        particles.push({
+          x, y,
+          vx: (Math.random() - 0.5) * 4,
+          vy: (Math.random() - 0.5) * 4 - 2,
+          alpha: 1,
+          color,
+          life: 40 + Math.random() * 20,
+        });
+      }
+    }
+
+    // --- Update ---
+    function update() {
+      if (state !== 'playing') return;
+
+      // Movement
+      player.vx = 0;
+      if (keys['ArrowLeft'])  { player.vx = -MOVE_SPEED; player.facingRight = false; }
+      if (keys['ArrowRight']) { player.vx =  MOVE_SPEED; player.facingRight = true; }
+      if ((keys['ArrowUp'] || keys[' ']) && player.onGround) {
+        player.vy = JUMP_FORCE;
+        player.onGround = false;
+        spawnParticles(player.x + PLAYER_W / 2, player.y + PLAYER_H, '#a080ff', 6);
+      }
+
+      player.vy += GRAVITY;
+      player.x += player.vx;
+      player.y += player.vy;
+
+      // Platform collisions
+      player.onGround = false;
+      for (const p of platforms) {
+        if (
+          player.vy >= 0 &&
+          player.x + PLAYER_W > p.x &&
+          player.x < p.x + p.w &&
+          player.y + PLAYER_H > p.y &&
+          player.y + PLAYER_H < p.y + p.h + player.vy + 2
+        ) {
+          player.y = p.y - PLAYER_H;
+          player.vy = 0;
+          player.onGround = true;
+        }
+      }
+
+      // Wall bounds
+      if (player.x < 0) player.x = 0;
+      if (player.x + PLAYER_W > W) player.x = W - PLAYER_W;
+
+      // Fell off bottom
+      if (player.y > WORLD_HEIGHT + 100) {
+        lives--;
+        updateUI();
+        if (lives <= 0) { state = 'gameover'; return; }
+        respawn();
+      }
+
+      // Checkpoints
+      for (const cp of checkpoints) {
+        if (!cp.activated &&
+          player.x + PLAYER_W > cp.x && player.x < cp.x + cp.w &&
+          player.y + PLAYER_H > cp.y && player.y < cp.y + cp.h) {
+          cp.activated = true;
+          score += 100;
+          updateUI();
+          spawnParticles(cp.x + cp.w / 2, cp.y, '#ffe680', 20);
+        }
+      }
+
+      // Win condition: reach top platform
+      const topPlatform = platforms[platforms.length - 1];
+      if (player.y + PLAYER_H >= topPlatform.y && player.y + PLAYER_H < topPlatform.y + topPlatform.h + 4
+        && player.x + PLAYER_W > topPlatform.x && player.x < topPlatform.x + topPlatform.w) {
+        state = 'win';
+        score += 500;
+        updateUI();
+      }
+
+      // Particles
+      particles = particles.filter(p => p.life > 0);
+      for (const p of particles) {
+        p.x += p.vx; p.y += p.vy; p.vy += 0.1;
+        p.alpha = p.life / 60;
+        p.life--;
+      }
+
+      // Camera: follow player smoothly, clamped to world
+      const targetCamY = player.y - H * 0.6;
+      camera.y += (targetCamY - camera.y) * 0.1;
+      camera.y = Math.max(0, Math.min(WORLD_HEIGHT - H, camera.y));
+
+      // Height display
+      heightEl.textContent = `Height: ${getHeightFt()} ft`;
+    }
+
+    // --- Draw ---
+    function drawBackground() {
+      // Sky gradient shifts as you go up
+      const progress = 1 - camera.y / WORLD_HEIGHT;
+      const r = Math.round(10 + progress * 20);
+      const g = Math.round(0 + progress * 10);
+      const b = Math.round(16 + progress * 60);
+      ctx.fillStyle = `rgb(${r},${g},${b})`;
+      ctx.fillRect(0, 0, W, H);
+
+      // Stars
+      for (const s of stars) {
+        ctx.globalAlpha = s.alpha * (0.3 + progress * 0.7);
+        ctx.fillStyle = '#fff';
+        ctx.beginPath();
+        ctx.arc(s.x, s.y, s.r, 0, Math.PI * 2);
+        ctx.fill();
+      }
+      ctx.globalAlpha = 1;
+    }
+
+    function worldToScreen(x, y) {
+      return { sx: x, sy: y - camera.y };
+    }
+
+    function drawPlatforms() {
+      for (const p of platforms) {
+        const { sx, sy } = worldToScreen(p.x, p.y);
+        if (sy > H + 20 || sy < -20) continue;
+
+        // Shadow
+        ctx.fillStyle = 'rgba(0,0,0,0.4)';
+        ctx.fillRect(sx + 4, sy + 4, p.w, p.h);
+
+        // Platform
+        ctx.fillStyle = p.color || '#4a2a7a';
+        ctx.fillRect(sx, sy, p.w, p.h);
+
+        // Top highlight
+        ctx.fillStyle = 'rgba(255,255,255,0.12)';
+        ctx.fillRect(sx, sy, p.w, 3);
+
+        // Label
+        if (p.label) {
+          ctx.fillStyle = '#ffe680';
+          ctx.font = '11px Georgia';
+          ctx.textAlign = 'center';
+          ctx.fillText(p.label, sx + p.w / 2, sy - 6);
+        }
+      }
+    }
+
+    function drawCheckpoints() {
+      for (const cp of checkpoints) {
+        const { sx, sy } = worldToScreen(cp.x, cp.y);
+        if (sy > H + 40 || sy < -40) continue;
+
+        const color = cp.activated ? '#ffe680' : '#888';
+        const glow = cp.activated ? 'rgba(255,230,128,0.3)' : 'rgba(0,0,0,0)';
+
+        // Glow
+        ctx.fillStyle = glow;
+        ctx.fillRect(sx - 6, sy - 6, cp.w + 12, cp.h + 12);
+
+        // Flag pole
+        ctx.fillStyle = color;
+        ctx.fillRect(sx + 8, sy, 3, cp.h);
+
+        // Flag
+        ctx.fillStyle = cp.activated ? '#e94560' : '#555';
+        ctx.beginPath();
+        ctx.moveTo(sx + 11, sy + 2);
+        ctx.lineTo(sx + 22, sy + 8);
+        ctx.lineTo(sx + 11, sy + 14);
+        ctx.closePath();
+        ctx.fill();
+
+        // Label
+        ctx.fillStyle = color;
+        ctx.font = '10px Georgia';
+        ctx.textAlign = 'center';
+        ctx.fillText(cp.label, sx + cp.w / 2, sy - 4);
+      }
+    }
+
+    function drawPlayer() {
+      const { sx, sy } = worldToScreen(player.x, player.y);
+
+      ctx.save();
+      if (!player.facingRight) {
+        ctx.translate(sx + PLAYER_W, sy);
+        ctx.scale(-1, 1);
+        ctx.translate(-sx, -sy);
+      }
+
+      // Robe (body)
+      ctx.fillStyle = '#1a1a2e';
+      ctx.fillRect(sx + 3, sy + 12, PLAYER_W - 6, PLAYER_H - 12);
+
+      // Robe bottom flare
+      ctx.fillStyle = '#2a2a4e';
+      ctx.beginPath();
+      ctx.moveTo(sx + 2, sy + PLAYER_H - 4);
+      ctx.lineTo(sx + PLAYER_W - 2, sy + PLAYER_H - 4);
+      ctx.lineTo(sx + PLAYER_W + 2, sy + PLAYER_H + 2);
+      ctx.lineTo(sx - 2, sy + PLAYER_H + 2);
+      ctx.closePath();
+      ctx.fill();
+
+      // Head
+      ctx.fillStyle = '#f5c89a';
+      ctx.fillRect(sx + 5, sy + 2, PLAYER_W - 10, 12);
+
+      // Glasses
+      ctx.strokeStyle = '#333';
+      ctx.lineWidth = 1;
+      ctx.strokeRect(sx + 6, sy + 5, 4, 3);
+      ctx.strokeRect(sx + 11, sy + 5, 4, 3);
+      ctx.beginPath();
+      ctx.moveTo(sx + 10, sy + 6.5);
+      ctx.lineTo(sx + 11, sy + 6.5);
+      ctx.stroke();
+
+      // Hair (messy)
+      ctx.fillStyle = '#2a1a00';
+      ctx.fillRect(sx + 5, sy + 1, PLAYER_W - 10, 5);
+      ctx.fillRect(sx + 4, sy + 2, 4, 3);
+      ctx.fillRect(sx + PLAYER_W - 8, sy + 2, 4, 3);
+
+      // Wand
+      ctx.fillStyle = '#8B5E3C';
+      ctx.fillRect(sx + PLAYER_W - 3, sy + 14, 2, 10);
+
+      // Scarf (red/gold)
+      ctx.fillStyle = '#e94560';
+      ctx.fillRect(sx + 4, sy + 12, PLAYER_W - 8, 3);
+      ctx.fillStyle = '#ffe680';
+      ctx.fillRect(sx + 4, sy + 14, PLAYER_W - 8, 2);
+
+      ctx.restore();
+    }
+
+    function drawParticles() {
+      for (const p of particles) {
+        const { sx, sy } = worldToScreen(p.x, p.y);
+        ctx.globalAlpha = p.alpha;
+        ctx.fillStyle = p.color;
+        ctx.beginPath();
+        ctx.arc(sx, sy, 3, 0, Math.PI * 2);
+        ctx.fill();
+      }
+      ctx.globalAlpha = 1;
+    }
+
+    function drawHUD() {
+      // Respawn button hint
+      ctx.fillStyle = 'rgba(255,255,255,0.3)';
+      ctx.font = '12px Georgia';
+      ctx.textAlign = 'left';
+      ctx.fillText('[R] Respawn at checkpoint', 8, H - 10);
+
+      // Controls hint (only at start)
+      if (camera.y > WORLD_HEIGHT - H - 100) {
+        ctx.fillStyle = 'rgba(255,255,255,0.4)';
+        ctx.font = '13px Georgia';
+        ctx.textAlign = 'center';
+        ctx.fillText('← → Move   ↑ or Space Jump   R Respawn', W / 2, H - 30);
+      }
+    }
+
+    function drawOverlay(title, sub1, sub2) {
+      ctx.fillStyle = 'rgba(0,0,0,0.65)';
+      ctx.fillRect(0, 0, W, H);
+      ctx.textAlign = 'center';
+      ctx.fillStyle = '#ffe680';
+      ctx.font = 'bold 48px Georgia';
+      ctx.fillText(title, W / 2, H / 2 - 40);
+      ctx.fillStyle = '#f5e6c8';
+      ctx.font = '22px Georgia';
+      ctx.fillText(sub1, W / 2, H / 2 + 10);
+      if (sub2) {
+        ctx.font = '16px Georgia';
+        ctx.fillStyle = '#aaa';
+        ctx.fillText(sub2, W / 2, H / 2 + 44);
+      }
+    }
+
+    function draw() {
+      drawBackground();
+
+      ctx.save();
+      drawPlatforms();
+      drawCheckpoints();
+      drawParticles();
+      drawPlayer();
+      ctx.restore();
+
+      drawHUD();
+
+      if (state === 'gameover') drawOverlay('GAME OVER', `Score: ${score}`, 'Press Enter to try again');
+      if (state === 'win') drawOverlay('⚡ You Made It! ⚡', `Score: ${score}`, 'Press Enter to play again');
+    }
+
+    function loop() {
+      update();
+      draw();
+      requestAnimationFrame(loop);
+    }
+
+    init();
+    loop();
+  </script>
+</body>
+</html>
