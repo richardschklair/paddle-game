@@ -2,144 +2,141 @@
 <html lang="en">
 <head>
   <meta charset="UTF-8" />
-  <title>Patronus Quiz</title>
+  <title>What's Your Patronus?</title>
   <style>
     * { margin: 0; padding: 0; box-sizing: border-box; }
     body {
-      background: #0a0010;
+      background: #05000f;
       min-height: 100vh;
       display: flex;
       align-items: center;
       justify-content: center;
       font-family: 'Georgia', serif;
       color: #f5e6c8;
+      overflow: hidden;
     }
+
+    /* Floating particles background */
+    #particles-bg {
+      position: fixed;
+      top: 0; left: 0;
+      width: 100%; height: 100%;
+      pointer-events: none;
+      z-index: 0;
+    }
+
     #app {
-      width: 600px;
-      padding: 20px;
+      position: relative;
+      z-index: 1;
+      width: 620px;
+      padding: 24px;
     }
-    h1 {
-      text-align: center;
-      font-size: 32px;
+
+    /* Intro screen */
+    #intro { text-align: center; animation: fadeUp 0.6s ease; }
+    #intro h1 {
+      font-size: 42px;
       color: #ffe680;
-      text-shadow: 0 0 20px rgba(255,230,128,0.6);
-      margin-bottom: 6px;
+      text-shadow: 0 0 30px rgba(255,230,128,0.7), 0 0 60px rgba(160,128,255,0.3);
+      margin-bottom: 8px;
     }
-    .subtitle {
-      text-align: center;
+    #intro .tagline {
       color: #a080ff;
-      font-size: 14px;
-      margin-bottom: 28px;
-      letter-spacing: 1px;
+      font-size: 15px;
+      letter-spacing: 2px;
+      margin-bottom: 32px;
     }
-    #progress-bar-wrap {
+    #intro p {
+      color: #c8b88a;
+      font-size: 16px;
+      line-height: 1.7;
+      margin-bottom: 36px;
+      background: #0d0520;
+      border: 1px solid #2a1550;
+      border-radius: 12px;
+      padding: 20px 24px;
+    }
+    #start-btn {
+      background: linear-gradient(135deg, #a080ff, #6040cc);
+      border: none;
+      border-radius: 10px;
+      padding: 16px 52px;
+      color: #fff;
+      font-family: 'Georgia', serif;
+      font-size: 20px;
+      cursor: pointer;
+      box-shadow: 0 0 24px rgba(160,128,255,0.5);
+      transition: transform 0.15s, box-shadow 0.15s;
+    }
+    #start-btn:hover { transform: scale(1.05); box-shadow: 0 0 40px rgba(160,128,255,0.8); }
+
+    /* Quiz screen */
+    #quiz { display: none; animation: fadeUp 0.5s ease; }
+    #progress-wrap {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      margin-bottom: 22px;
+    }
+    #progress-bar-bg {
+      flex: 1;
       background: #1a0a2e;
       border-radius: 8px;
-      height: 8px;
-      margin-bottom: 24px;
+      height: 6px;
       overflow: hidden;
       border: 1px solid #3a1f5c;
     }
-    #progress-bar {
-      height: 100%;
-      background: linear-gradient(90deg, #a080ff, #ffe680);
-      border-radius: 8px;
-      transition: width 0.4s ease;
-    }
-    #score-display {
-      text-align: right;
-      font-size: 14px;
-      color: #a080ff;
-      margin-bottom: 16px;
-    }
+    #progress-bar { height: 100%; background: linear-gradient(90deg, #a080ff, #ffe680); border-radius: 8px; transition: width 0.5s ease; }
+    #progress-label { font-size: 13px; color: #888; white-space: nowrap; }
+
     #question-card {
-      background: #120820;
+      background: #0d0520;
       border: 1px solid #3a1f5c;
-      border-radius: 12px;
-      padding: 28px;
-      margin-bottom: 20px;
-      position: relative;
-    }
-    #question-number {
-      font-size: 12px;
-      color: #888;
-      margin-bottom: 10px;
-      letter-spacing: 1px;
-      text-transform: uppercase;
-    }
-    #jackpot-badge {
-      display: none;
-      background: linear-gradient(135deg, #ffe680, #ff9900);
-      color: #000;
-      font-size: 11px;
-      font-weight: bold;
-      padding: 3px 10px;
-      border-radius: 20px;
-      position: absolute;
-      top: 20px;
-      right: 20px;
-      animation: pulse 1.2s infinite;
-      letter-spacing: 1px;
-    }
-    @keyframes pulse {
-      0%, 100% { box-shadow: 0 0 6px rgba(255,230,128,0.4); }
-      50% { box-shadow: 0 0 18px rgba(255,230,128,0.9); }
+      border-radius: 14px;
+      padding: 30px 28px 24px;
+      margin-bottom: 18px;
     }
     #question-text {
-      font-size: 20px;
+      font-size: 22px;
       line-height: 1.5;
       color: #f5e6c8;
     }
-    #options {
-      display: flex;
-      flex-direction: column;
-      gap: 12px;
-    }
+
+    #options { display: flex; flex-direction: column; gap: 12px; }
     .option-btn {
-      background: #1a0a2e;
+      background: #0d0520;
       border: 1px solid #3a1f5c;
-      border-radius: 8px;
-      padding: 14px 18px;
-      color: #f5e6c8;
+      border-radius: 10px;
+      padding: 16px 20px;
+      color: #d8c8f0;
       font-family: 'Georgia', serif;
       font-size: 16px;
       cursor: pointer;
       text-align: left;
-      transition: background 0.15s, border-color 0.15s, transform 0.1s;
-      position: relative;
+      transition: background 0.15s, border-color 0.15s, transform 0.12s, box-shadow 0.15s;
+      line-height: 1.4;
     }
     .option-btn:hover:not(:disabled) {
-      background: #2a1a4e;
+      background: #1e0a3e;
       border-color: #a080ff;
-      transform: translateX(4px);
+      transform: translateX(6px);
+      box-shadow: -4px 0 12px rgba(160,128,255,0.3);
     }
-    .option-btn.correct {
-      background: #0a2a0a;
-      border-color: #4caf50;
-      color: #81d44c;
+    .option-btn.selected {
+      background: #2a1060;
+      border-color: #ffe680;
+      color: #ffe680;
+      transform: translateX(6px);
     }
-    .option-btn.wrong {
-      background: #2a0a0a;
-      border-color: #e94560;
-      color: #e94560;
-    }
-    .option-btn:disabled { cursor: default; transform: none; }
-    #feedback {
-      min-height: 40px;
-      text-align: center;
-      font-size: 17px;
-      margin-top: 16px;
-      transition: opacity 0.3s;
-    }
-    .feedback-correct { color: #81d44c; }
-    .feedback-wrong { color: #e94560; }
+    .option-btn:disabled { cursor: default; }
+
     #next-btn {
       display: none;
       margin: 20px auto 0;
       background: linear-gradient(135deg, #a080ff, #7040cc);
       border: none;
-      border-radius: 8px;
-      padding: 14px 40px;
+      border-radius: 10px;
+      padding: 14px 44px;
       color: #fff;
       font-family: 'Georgia', serif;
       font-size: 17px;
@@ -148,281 +145,342 @@
     }
     #next-btn:hover { opacity: 0.85; transform: scale(1.03); }
 
-    /* Results screen */
-    #results {
-      display: none;
-      text-align: center;
-      animation: fadeIn 0.5s ease;
+    /* Result screen */
+    #result { display: none; text-align: center; animation: revealResult 0.8s ease; }
+    @keyframes revealResult {
+      0% { opacity: 0; transform: scale(0.85); }
+      60% { transform: scale(1.04); }
+      100% { opacity: 1; transform: scale(1); }
     }
-    @keyframes fadeIn { from { opacity: 0; transform: translateY(20px); } to { opacity: 1; transform: translateY(0); } }
-    #results h2 { font-size: 38px; color: #ffe680; margin-bottom: 10px; text-shadow: 0 0 20px rgba(255,230,128,0.5); }
-    #final-score { font-size: 56px; font-weight: bold; color: #a080ff; margin: 16px 0; }
-    #result-message { font-size: 18px; color: #f5e6c8; margin-bottom: 10px; }
-    #jackpot-reveal { font-size: 14px; color: #ffe680; margin-bottom: 28px; min-height: 20px; }
+    #result-title { font-size: 18px; color: #a080ff; letter-spacing: 3px; text-transform: uppercase; margin-bottom: 10px; }
+    #patronus-name {
+      font-size: 52px;
+      font-weight: bold;
+      color: #ffe680;
+      text-shadow: 0 0 40px rgba(255,230,128,0.8), 0 0 80px rgba(160,128,255,0.4);
+      margin-bottom: 12px;
+    }
+    #patronus-emoji { font-size: 72px; margin-bottom: 18px; animation: float 3s ease-in-out infinite; }
+    @keyframes float { 0%,100%{transform:translateY(0)} 50%{transform:translateY(-10px)} }
+
+    #patronus-card {
+      background: #0d0520;
+      border: 1px solid #3a1f5c;
+      border-radius: 14px;
+      padding: 24px 28px;
+      margin-bottom: 24px;
+      text-align: left;
+    }
+    #patronus-traits {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 8px;
+      margin-bottom: 14px;
+    }
+    .trait-chip {
+      background: #2a1060;
+      border: 1px solid #6040cc;
+      border-radius: 20px;
+      padding: 4px 14px;
+      font-size: 13px;
+      color: #c8a8ff;
+    }
+    #patronus-desc { font-size: 15px; color: #c8b88a; line-height: 1.7; }
+    #patronus-famous { font-size: 13px; color: #888; margin-top: 10px; font-style: italic; }
+
     #play-again {
-      background: linear-gradient(135deg, #ffe680, #ff9900);
+      background: linear-gradient(135deg, #ffe680, #cc9900);
       border: none;
-      border-radius: 8px;
-      padding: 14px 44px;
+      border-radius: 10px;
+      padding: 15px 48px;
       color: #000;
       font-family: 'Georgia', serif;
       font-size: 18px;
       font-weight: bold;
       cursor: pointer;
-      transition: opacity 0.2s, transform 0.1s;
+      transition: transform 0.15s, box-shadow 0.15s;
+      box-shadow: 0 0 20px rgba(255,230,128,0.4);
     }
-    #play-again:hover { opacity: 0.85; transform: scale(1.03); }
-    .stars {
-      font-size: 28px;
-      margin-bottom: 8px;
-    }
-    #answer-summary {
-      margin: 18px 0;
-      text-align: left;
-      background: #120820;
-      border: 1px solid #3a1f5c;
-      border-radius: 10px;
-      padding: 16px 20px;
-    }
-    #answer-summary h3 { color: #a080ff; font-size: 14px; letter-spacing: 1px; margin-bottom: 12px; text-transform: uppercase; }
-    .summary-item {
-      display: flex;
-      justify-content: space-between;
-      align-items: center;
-      padding: 6px 0;
-      border-bottom: 1px solid #1e0e3e;
-      font-size: 14px;
-      gap: 12px;
-    }
-    .summary-item:last-child { border-bottom: none; }
-    .summary-q { color: #ccc; flex: 1; }
-    .summary-pts { font-weight: bold; white-space: nowrap; }
-    .summary-pts.got { color: #81d44c; }
-    .summary-pts.missed { color: #e94560; }
+    #play-again:hover { transform: scale(1.05); box-shadow: 0 0 36px rgba(255,230,128,0.7); }
+
+    @keyframes fadeUp { from { opacity: 0; transform: translateY(24px); } to { opacity: 1; transform: translateY(0); } }
   </style>
 </head>
 <body>
+<canvas id="particles-bg"></canvas>
 <div id="app">
-  <!-- Quiz screen -->
+
+  <!-- Intro -->
+  <div id="intro">
+    <h1>⚡ Expecto Patronum ⚡</h1>
+    <p class="tagline">Discover Your Patronus</p>
+    <p>
+      The Patronus is a powerful charm that takes the form of an animal guardian —
+      a reflection of your innermost self. Answer five questions honestly and the
+      magic will reveal the creature that protects your soul.
+    </p>
+    <button id="start-btn">Begin the Charm →</button>
+  </div>
+
+  <!-- Quiz -->
   <div id="quiz">
-    <h1>⚡ Patronus Quiz ⚡</h1>
-    <p class="subtitle">Cast your knowledge — Expecto Patronum!</p>
-    <div id="progress-bar-wrap"><div id="progress-bar" style="width:0%"></div></div>
-    <div id="score-display">Score: 0</div>
+    <div id="progress-wrap">
+      <div id="progress-bar-bg"><div id="progress-bar" style="width:0%"></div></div>
+      <span id="progress-label">1 / 5</span>
+    </div>
     <div id="question-card">
-      <div id="question-number"></div>
-      <div id="jackpot-badge">⚡ JACKPOT QUESTION — 5,000 pts ⚡</div>
       <div id="question-text"></div>
     </div>
     <div id="options"></div>
-    <div id="feedback"></div>
-    <button id="next-btn">Next Question →</button>
+    <button id="next-btn">Continue →</button>
   </div>
 
-  <!-- Results screen -->
-  <div id="results">
-    <div class="stars" id="stars-display"></div>
-    <h2>Quiz Complete!</h2>
-    <div id="final-score"></div>
-    <div id="result-message"></div>
-    <div id="jackpot-reveal"></div>
-    <div id="answer-summary"><h3>Your Answers</h3><div id="summary-list"></div></div>
-    <button id="play-again">🔮 Play Again</button>
+  <!-- Result -->
+  <div id="result">
+    <div id="result-title">Your Patronus is</div>
+    <div id="patronus-emoji"></div>
+    <div id="patronus-name"></div>
+    <div id="patronus-card">
+      <div id="patronus-traits"></div>
+      <div id="patronus-desc"></div>
+      <div id="patronus-famous"></div>
+    </div>
+    <button id="play-again">🔮 Try Again</button>
   </div>
 </div>
 
 <script>
-  const ALL_QUESTIONS = [
+  // --- Patronus definitions ---
+  const PATRONUSES = {
+    stag: {
+      name: 'Stag',
+      emoji: '🦌',
+      traits: ['Noble', 'Brave', 'Protective'],
+      desc: 'You carry yourself with quiet dignity and stand tall in the face of danger. You are fiercely protective of those you love and lead by example. The stag represents courage, strength, and an unshakeable moral compass.',
+      famous: 'Famous bearer: Harry Potter himself.',
+    },
+    otter: {
+      name: 'Otter',
+      emoji: '🦦',
+      traits: ['Clever', 'Playful', 'Loyal'],
+      desc: 'Your quick mind and warm heart make you beloved by all. You solve problems with creativity and never lose your sense of joy. You form deep, lasting bonds and bring light to every room you enter.',
+      famous: 'Famous bearer: Hermione Granger.',
+    },
+    phoenix: {
+      name: 'Phoenix',
+      emoji: '🔥',
+      traits: ['Wise', 'Resilient', 'Powerful'],
+      desc: 'You have faced hardship and risen stronger every time. Your wisdom runs deep and your spirit cannot be extinguished. You inspire those around you to be better, and in your darkest hour you find your greatest strength.',
+      famous: 'Famous bearer: Albus Dumbledore.',
+    },
+    wolf: {
+      name: 'Wolf',
+      emoji: '🐺',
+      traits: ['Fierce', 'Loyal', 'Instinctive'],
+      desc: 'You are fiercely devoted to your pack — the people who matter most to you. You trust your gut, act decisively, and never back down from a threat. Beneath your fierce exterior is a deeply loyal heart.',
+      famous: 'Rare and powerful — a true guardian of the wild.',
+    },
+    doe: {
+      name: 'Doe',
+      emoji: '🫎',
+      traits: ['Gentle', 'Selfless', 'Loving'],
+      desc: 'Your love for others is the most powerful magic you possess. You give freely, forgive deeply, and inspire loyalty through pure warmth. Your gentleness is not weakness — it is extraordinary strength.',
+      famous: 'Famous bearer: Lily Potter & Severus Snape.',
+    },
+    dolphin: {
+      name: 'Dolphin',
+      emoji: '🐬',
+      traits: ['Joyful', 'Social', 'Intelligent'],
+      desc: 'You light up every space you inhabit. Quick-witted and deeply empathetic, you read people effortlessly and bring out the best in them. You find joy in connection and thrive when surrounded by those you love.',
+      famous: 'A rare Patronus — only the most warm-hearted wizards produce one.',
+    },
+    hare: {
+      name: 'Hare',
+      emoji: '🐇',
+      traits: ['Free-spirited', 'Creative', 'Unique'],
+      desc: 'You see the world differently from everyone else — and that is your greatest gift. Imaginative and independent, you follow your own path with quiet confidence. The unusual doesn\'t frighten you; it fascinates you.',
+      famous: 'Famous bearer: Luna Lovegood.',
+    },
+    fox: {
+      name: 'Fox',
+      emoji: '🦊',
+      traits: ['Cunning', 'Adaptable', 'Sharp'],
+      desc: 'You are always three steps ahead. Resourceful and sharp-minded, you find solutions where others see only obstacles. You adapt effortlessly to any situation and have a gift for reading people with uncanny accuracy.',
+      famous: 'A cunning and rare Patronus for the quick of mind.',
+    },
+  };
+
+  // --- Questions ---
+  // Each option maps to two patronus keys with +2 points each
+  const QUESTIONS = [
     {
-      q: "What is Harry Potter's Patronus?",
-      options: ["Wolf", "Stag", "Otter", "Phoenix"],
-      answer: "Stag",
-      fact: "Harry's stag Patronus matches his father James's Animagus form."
+      text: 'What do you value above all else?',
+      options: [
+        { text: 'Courage and honour', maps: ['stag', 'wolf'] },
+        { text: 'Knowledge and cleverness', maps: ['otter', 'fox'] },
+        { text: 'Love and deep connection', maps: ['doe', 'dolphin'] },
+        { text: 'Freedom and wonder', maps: ['hare', 'phoenix'] },
+      ],
     },
     {
-      q: "What is Hermione Granger's Patronus?",
-      options: ["Cat", "Rabbit", "Otter", "Doe"],
-      answer: "Otter",
-      fact: "J.K. Rowling said the otter is her own favorite animal — a nod to Hermione being her favorite character."
+      text: 'When danger approaches, what do you do?',
+      options: [
+        { text: 'Step forward — you\'ll face it head on', maps: ['stag', 'wolf'] },
+        { text: 'Think fast and find the smartest solution', maps: ['otter', 'fox'] },
+        { text: 'Make sure everyone around you is safe first', maps: ['doe', 'dolphin'] },
+        { text: 'Trust your instincts — something unexpected', maps: ['hare', 'phoenix'] },
+      ],
     },
     {
-      q: "What is Severus Snape's Patronus?",
-      options: ["Bat", "Raven", "Doe", "Stag"],
-      answer: "Doe",
-      fact: "Snape's Patronus is a doe — the same as Lily Potter's — revealing his lifelong love for her."
+      text: 'Your friends would most likely describe you as…',
+      options: [
+        { text: 'Brave, dependable, and strong', maps: ['stag', 'wolf'] },
+        { text: 'Witty, sharp, and resourceful', maps: ['otter', 'fox'] },
+        { text: 'Warm, caring, and selfless', maps: ['doe', 'dolphin'] },
+        { text: 'Original, quirky, and wonderfully strange', maps: ['hare', 'phoenix'] },
+      ],
     },
     {
-      q: "What is Luna Lovegood's Patronus?",
-      options: ["Unicorn", "Hare", "Fox", "Rabbit"],
-      answer: "Hare",
-      fact: "Luna's hare Patronus is fitting for her whimsical, free-spirited personality."
+      text: 'What would you find at the end of a long, dark corridor?',
+      options: [
+        { text: 'Something worth protecting', maps: ['stag', 'doe'] },
+        { text: 'A puzzle waiting to be solved', maps: ['otter', 'fox'] },
+        { text: 'A friend who needs you', maps: ['dolphin', 'wolf'] },
+        { text: 'Something magical and unknown', maps: ['hare', 'phoenix'] },
+      ],
     },
     {
-      q: "What is Ron Weasley's Patronus?",
-      options: ["Weasel", "Fox", "Jack Russell Terrier", "Otter"],
-      answer: "Jack Russell Terrier",
-      fact: "Ron's Jack Russell Terrier Patronus is known for chasing otters — a playful nod to Hermione's otter."
-    },
-    {
-      q: "What is Albus Dumbledore's Patronus?",
-      options: ["Griffin", "Eagle", "Phoenix", "Owl"],
-      answer: "Phoenix",
-      fact: "Dumbledore's phoenix Patronus reflects his bond with Fawkes and themes of rebirth."
-    },
-    {
-      q: "What is Ginny Weasley's Patronus?",
-      options: ["Fox", "Horse", "Hare", "Swan"],
-      answer: "Horse",
-      fact: "Ginny's horse Patronus was confirmed by J.K. Rowling on Pottermore."
-    },
-    {
-      q: "What is Cho Chang's Patronus?",
-      options: ["Crane", "Swan", "Dove", "Heron"],
-      answer: "Swan",
-      fact: "Cho's swan Patronus symbolizes grace and beauty — fitting for one of Hogwarts' most popular students."
+      text: 'Which of these speaks to your soul?',
+      options: [
+        { text: '"It takes a great deal of bravery to stand up to our enemies — but just as much to stand up to our friends."', maps: ['stag', 'wolf'] },
+        { text: '"When in doubt, go to the library."', maps: ['otter', 'fox'] },
+        { text: '"Things we lose have a way of coming back to us in the end."', maps: ['doe', 'dolphin'] },
+        { text: '"The things we love tell us what we are."', maps: ['hare', 'phoenix'] },
+      ],
     },
   ];
 
-  const NORMAL_PTS = 10;
-  const JACKPOT_PTS = 5000;
+  // --- State ---
+  let current = 0;
+  let scores = {};
+  let selectedOption = null;
 
-  let questions, jackpotIndex, current, score, answered, history;
-
-  function shuffle(arr) {
-    return [...arr].sort(() => Math.random() - 0.5);
+  function resetScores() {
+    scores = {};
+    Object.keys(PATRONUSES).forEach(k => scores[k] = 0);
   }
 
+  // --- Particle background ---
+  const bgCanvas = document.getElementById('particles-bg');
+  const bgCtx = bgCanvas.getContext('2d');
+  bgCanvas.width = window.innerWidth;
+  bgCanvas.height = window.innerHeight;
+  window.addEventListener('resize', () => { bgCanvas.width = window.innerWidth; bgCanvas.height = window.innerHeight; });
+
+  const sparks = Array.from({ length: 60 }, () => ({
+    x: Math.random() * window.innerWidth,
+    y: Math.random() * window.innerHeight,
+    vx: (Math.random() - 0.5) * 0.3,
+    vy: -Math.random() * 0.4 - 0.1,
+    r: Math.random() * 1.8 + 0.4,
+    alpha: Math.random() * 0.5 + 0.1,
+    color: Math.random() > 0.5 ? '#a080ff' : '#ffe680',
+  }));
+
+  function animateBg() {
+    bgCtx.clearRect(0, 0, bgCanvas.width, bgCanvas.height);
+    sparks.forEach(s => {
+      s.x += s.vx; s.y += s.vy;
+      if (s.y < -4) { s.y = bgCanvas.height + 4; s.x = Math.random() * bgCanvas.width; }
+      bgCtx.globalAlpha = s.alpha;
+      bgCtx.fillStyle = s.color;
+      bgCtx.beginPath();
+      bgCtx.arc(s.x, s.y, s.r, 0, Math.PI * 2);
+      bgCtx.fill();
+    });
+    bgCtx.globalAlpha = 1;
+    requestAnimationFrame(animateBg);
+  }
+  animateBg();
+
+  // --- Quiz logic ---
   function startQuiz() {
-    questions = shuffle(ALL_QUESTIONS).slice(0, 5);
-    jackpotIndex = Math.floor(Math.random() * 5);
     current = 0;
-    score = 0;
-    answered = false;
-    history = [];
+    selectedOption = null;
+    resetScores();
+    document.getElementById('intro').style.display = 'none';
+    document.getElementById('result').style.display = 'none';
     document.getElementById('quiz').style.display = 'block';
-    document.getElementById('results').style.display = 'none';
-    updateScoreDisplay();
     showQuestion();
   }
 
-  function updateScoreDisplay() {
-    document.getElementById('score-display').textContent = `Score: ${score.toLocaleString()}`;
-  }
-
   function showQuestion() {
-    const q = questions[current];
-    const isJackpot = current === jackpotIndex;
-    answered = false;
-
-    document.getElementById('progress-bar').style.width = `${(current / 5) * 100}%`;
-    document.getElementById('question-number').textContent = `Question ${current + 1} of 5`;
-    document.getElementById('question-text').textContent = q.q;
-    document.getElementById('jackpot-badge').style.display = isJackpot ? 'block' : 'none';
-    document.getElementById('feedback').textContent = '';
-    document.getElementById('feedback').className = '';
+    selectedOption = null;
+    const q = QUESTIONS[current];
+    document.getElementById('progress-bar').style.width = `${(current / QUESTIONS.length) * 100}%`;
+    document.getElementById('progress-label').textContent = `${current + 1} / ${QUESTIONS.length}`;
+    document.getElementById('question-text').textContent = q.text;
     document.getElementById('next-btn').style.display = 'none';
 
-    const opts = document.getElementById('options');
-    opts.innerHTML = '';
-    shuffle(q.options).forEach(opt => {
+    const optsEl = document.getElementById('options');
+    optsEl.innerHTML = '';
+    q.options.forEach((opt, i) => {
       const btn = document.createElement('button');
       btn.className = 'option-btn';
-      btn.textContent = opt;
-      btn.addEventListener('click', () => selectAnswer(opt, q, isJackpot));
-      opts.appendChild(btn);
+      btn.textContent = opt.text;
+      btn.addEventListener('click', () => selectOption(btn, i));
+      optsEl.appendChild(btn);
     });
   }
 
-  function selectAnswer(chosen, q, isJackpot) {
-    if (answered) return;
-    answered = true;
-
-    const correct = chosen === q.answer;
-    const pts = correct ? (isJackpot ? JACKPOT_PTS : NORMAL_PTS) : 0;
-    if (correct) score += pts;
-
-    history.push({ q: q.q, correct, pts, earned: correct ? pts : 0, isJackpot });
-    updateScoreDisplay();
-
-    // Style buttons
-    document.querySelectorAll('.option-btn').forEach(btn => {
-      btn.disabled = true;
-      if (btn.textContent === q.answer) btn.classList.add('correct');
-      else if (btn.textContent === chosen && !correct) btn.classList.add('wrong');
-    });
-
-    const fb = document.getElementById('feedback');
-    if (correct) {
-      fb.textContent = isJackpot
-        ? `⚡ JACKPOT! +${pts.toLocaleString()} points! — ${q.fact}`
-        : `✓ Correct! +${pts} points — ${q.fact}`;
-      fb.className = 'feedback-correct';
-    } else {
-      fb.textContent = `✗ The answer was "${q.answer}". ${q.fact}`;
-      fb.className = 'feedback-wrong';
-    }
-
-    const nextBtn = document.getElementById('next-btn');
-    nextBtn.style.display = 'block';
-    nextBtn.textContent = current < 4 ? 'Next Question →' : 'See Results →';
+  function selectOption(btn, index) {
+    document.querySelectorAll('.option-btn').forEach(b => b.classList.remove('selected'));
+    btn.classList.add('selected');
+    selectedOption = index;
+    document.getElementById('next-btn').style.display = 'block';
+    document.getElementById('next-btn').textContent = current < QUESTIONS.length - 1 ? 'Continue →' : 'Reveal My Patronus ⚡';
   }
 
   document.getElementById('next-btn').addEventListener('click', () => {
+    if (selectedOption === null) return;
+    const maps = QUESTIONS[current].options[selectedOption].maps;
+    maps.forEach(k => scores[k] += 2);
     current++;
-    if (current < 5) {
+    if (current < QUESTIONS.length) {
       showQuestion();
     } else {
-      showResults();
+      showResult();
     }
   });
 
-  function showResults() {
-    document.getElementById('progress-bar').style.width = '100%';
+  function showResult() {
     document.getElementById('quiz').style.display = 'none';
-    const results = document.getElementById('results');
-    results.style.display = 'block';
+    const resultEl = document.getElementById('result');
+    resultEl.style.display = 'block';
 
-    document.getElementById('final-score').textContent = score.toLocaleString() + ' pts';
+    const winner = Object.entries(scores).sort((a, b) => b[1] - a[1])[0][0];
+    const p = PATRONUSES[winner];
 
-    const correct = history.filter(h => h.correct).length;
-    const stars = correct <= 1 ? '⭐' : correct <= 3 ? '⭐⭐⭐' : correct === 4 ? '⭐⭐⭐⭐' : '⭐⭐⭐⭐⭐';
-    document.getElementById('stars-display').textContent = stars;
+    document.getElementById('patronus-emoji').textContent = p.emoji;
+    document.getElementById('patronus-name').textContent = p.name;
+    document.getElementById('patronus-desc').textContent = p.desc;
+    document.getElementById('patronus-famous').textContent = p.famous;
 
-    const messages = [
-      "Even a Muggle could do better!", // 0
-      "Keep studying at Hogwarts Library.", // 1
-      "Not bad — a respectable effort!", // 2
-      "Impressive! Dumbledore would be pleased.", // 3
-      "Outstanding! Top of the class!", // 4
-      "Perfect score! You must be a Patronus master!", // 5
-    ];
-    document.getElementById('result-message').textContent = messages[correct];
-
-    // Jackpot reveal
-    const jp = history[jackpotIndex];
-    document.getElementById('jackpot-reveal').textContent = jp.correct
-      ? `⚡ You hit the 5,000-pt jackpot on Q${jackpotIndex + 1}!`
-      : `(The 5,000-pt jackpot was on Q${jackpotIndex + 1} — you missed it.)`;
-
-    // Summary
-    const list = document.getElementById('summary-list');
-    list.innerHTML = '';
-    history.forEach((h, i) => {
-      const div = document.createElement('div');
-      div.className = 'summary-item';
-      const short = h.q.length > 42 ? h.q.slice(0, 42) + '…' : h.q;
-      div.innerHTML = `
-        <span class="summary-q">${short}</span>
-        <span class="summary-pts ${h.correct ? 'got' : 'missed'}">
-          ${h.correct ? '+' + h.earned.toLocaleString() : '0'} pts
-        </span>`;
-      list.appendChild(div);
+    const traitsEl = document.getElementById('patronus-traits');
+    traitsEl.innerHTML = '';
+    p.traits.forEach(t => {
+      const chip = document.createElement('span');
+      chip.className = 'trait-chip';
+      chip.textContent = t;
+      traitsEl.appendChild(chip);
     });
   }
 
-  document.getElementById('play-again').addEventListener('click', startQuiz);
-
-  startQuiz();
+  document.getElementById('start-btn').addEventListener('click', startQuiz);
+  document.getElementById('play-again').addEventListener('click', () => {
+    document.getElementById('result').style.display = 'none';
+    document.getElementById('intro').style.display = 'block';
+  });
 </script>
 </body>
 </html>
