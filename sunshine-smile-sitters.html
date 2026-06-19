@@ -1,0 +1,1321 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0" />
+  <title>Sunshine & Smile Sitters</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Nunito:wght@400;600;700;800;900&display=swap" rel="stylesheet" />
+  <style>
+    /* ===========================
+       RESET & BASE
+    =========================== */
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+    :root {
+      --sun: #FBBF24;
+      --sun-deep: #F59E0B;
+      --sky: #38BDF8;
+      --sky-deep: #0EA5E9;
+      --coral: #FB7185;
+      --green: #34D399;
+      --bg: #FFFCF0;
+      --card: #FFFFFF;
+      --text: #1C1917;
+      --muted: #78716C;
+      --border: #E7E5E4;
+      --radius: 20px;
+      --shadow: 0 4px 24px rgba(0,0,0,0.08);
+      --shadow-lg: 0 8px 40px rgba(0,0,0,0.12);
+    }
+
+    html { scroll-behavior: smooth; }
+
+    body {
+      font-family: 'Nunito', sans-serif;
+      background: var(--bg);
+      color: var(--text);
+      font-size: 16px;
+      line-height: 1.6;
+      -webkit-font-smoothing: antialiased;
+    }
+
+    img { max-width: 100%; display: block; }
+    a { color: inherit; text-decoration: none; }
+
+    /* ===========================
+       NAV
+    =========================== */
+    nav {
+      position: sticky;
+      top: 0;
+      z-index: 100;
+      background: rgba(255,252,240,0.92);
+      backdrop-filter: blur(12px);
+      -webkit-backdrop-filter: blur(12px);
+      border-bottom: 1px solid var(--border);
+      padding: 14px 20px;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+    }
+
+    .nav-logo {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
+
+    .nav-logo .sun-icon {
+      font-size: 24px;
+      line-height: 1;
+    }
+
+    .nav-logo-text {
+      font-weight: 800;
+      font-size: 15px;
+      color: var(--text);
+      line-height: 1.2;
+    }
+
+    .nav-logo-text span {
+      color: var(--sun-deep);
+    }
+
+    .nav-cta {
+      background: var(--sun);
+      color: var(--text);
+      font-weight: 800;
+      font-size: 14px;
+      padding: 10px 18px;
+      border-radius: 100px;
+      border: none;
+      cursor: pointer;
+      transition: background 0.15s, transform 0.1s;
+      white-space: nowrap;
+    }
+
+    .nav-cta:active { transform: scale(0.96); background: var(--sun-deep); }
+
+    /* ===========================
+       HERO
+    =========================== */
+    .hero {
+      background: linear-gradient(160deg, #FEF9C3 0%, #BAE6FD 100%);
+      padding: 60px 24px 56px;
+      text-align: center;
+      position: relative;
+      overflow: hidden;
+    }
+
+    .hero::before {
+      content: '☀️';
+      position: absolute;
+      font-size: 120px;
+      top: -20px;
+      right: -20px;
+      opacity: 0.18;
+      pointer-events: none;
+    }
+
+    .hero::after {
+      content: '⭐';
+      position: absolute;
+      font-size: 80px;
+      bottom: -10px;
+      left: -10px;
+      opacity: 0.15;
+      pointer-events: none;
+    }
+
+    .hero-badge {
+      display: inline-block;
+      background: white;
+      border-radius: 100px;
+      padding: 6px 16px;
+      font-size: 13px;
+      font-weight: 700;
+      color: var(--sky-deep);
+      margin-bottom: 20px;
+      box-shadow: 0 2px 8px rgba(0,0,0,0.08);
+    }
+
+    .hero h1 {
+      font-size: 38px;
+      font-weight: 900;
+      line-height: 1.1;
+      color: var(--text);
+      margin-bottom: 10px;
+    }
+
+    .hero h1 .highlight {
+      color: var(--sun-deep);
+    }
+
+    .hero-tagline {
+      font-size: 18px;
+      font-weight: 700;
+      color: var(--sky-deep);
+      margin-bottom: 14px;
+      letter-spacing: 0.02em;
+    }
+
+    .hero-desc {
+      font-size: 16px;
+      color: var(--muted);
+      max-width: 340px;
+      margin: 0 auto 32px;
+      line-height: 1.7;
+    }
+
+    .hero-cta {
+      display: inline-block;
+      background: var(--sun);
+      color: var(--text);
+      font-weight: 800;
+      font-size: 17px;
+      padding: 16px 36px;
+      border-radius: 100px;
+      border: none;
+      cursor: pointer;
+      box-shadow: 0 4px 20px rgba(251,191,36,0.45);
+      transition: transform 0.1s, box-shadow 0.15s;
+      width: 100%;
+      max-width: 320px;
+    }
+
+    .hero-cta:active {
+      transform: scale(0.97);
+      box-shadow: 0 2px 10px rgba(251,191,36,0.3);
+    }
+
+    .hero-trust {
+      margin-top: 24px;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      gap: 16px;
+      flex-wrap: wrap;
+    }
+
+    .trust-pill {
+      display: flex;
+      align-items: center;
+      gap: 6px;
+      background: white;
+      border-radius: 100px;
+      padding: 7px 14px;
+      font-size: 13px;
+      font-weight: 700;
+      color: var(--muted);
+      box-shadow: 0 2px 8px rgba(0,0,0,0.06);
+    }
+
+    .trust-pill .dot {
+      width: 8px;
+      height: 8px;
+      border-radius: 50%;
+      background: var(--green);
+      flex-shrink: 0;
+    }
+
+    /* ===========================
+       SECTION BASE
+    =========================== */
+    section {
+      padding: 56px 24px;
+    }
+
+    .section-label {
+      font-size: 12px;
+      font-weight: 800;
+      letter-spacing: 0.12em;
+      text-transform: uppercase;
+      color: var(--sun-deep);
+      margin-bottom: 8px;
+    }
+
+    .section-title {
+      font-size: 28px;
+      font-weight: 900;
+      line-height: 1.2;
+      margin-bottom: 12px;
+    }
+
+    .section-sub {
+      font-size: 16px;
+      color: var(--muted);
+      line-height: 1.7;
+      margin-bottom: 36px;
+    }
+
+    /* ===========================
+       ABOUT
+    =========================== */
+    .about {
+      background: white;
+    }
+
+    .about-cards {
+      display: flex;
+      flex-direction: column;
+      gap: 16px;
+    }
+
+    .about-card {
+      background: var(--bg);
+      border-radius: var(--radius);
+      padding: 24px;
+      display: flex;
+      align-items: flex-start;
+      gap: 16px;
+    }
+
+    .about-card-icon {
+      font-size: 32px;
+      flex-shrink: 0;
+      width: 56px;
+      height: 56px;
+      background: white;
+      border-radius: 16px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      box-shadow: var(--shadow);
+    }
+
+    .about-card-title {
+      font-size: 17px;
+      font-weight: 800;
+      margin-bottom: 4px;
+    }
+
+    .about-card-text {
+      font-size: 14px;
+      color: var(--muted);
+      line-height: 1.6;
+    }
+
+    /* ===========================
+       SITTERS
+    =========================== */
+    .sitters {
+      background: linear-gradient(180deg, #FEF9C3 0%, var(--bg) 100%);
+    }
+
+    .sitter-cards {
+      display: flex;
+      flex-direction: column;
+      gap: 20px;
+    }
+
+    .sitter-card {
+      background: var(--card);
+      border-radius: var(--radius);
+      box-shadow: var(--shadow);
+      overflow: hidden;
+    }
+
+    .sitter-header {
+      height: 120px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 64px;
+      position: relative;
+    }
+
+    .sitter-header.stella { background: linear-gradient(135deg, #FEF9C3, #FCD34D); }
+    .sitter-header.lexi  { background: linear-gradient(135deg, #BAE6FD, #7DD3FC); }
+
+    .sitter-body {
+      padding: 20px 20px 24px;
+    }
+
+    .sitter-name {
+      font-size: 22px;
+      font-weight: 900;
+      margin-bottom: 2px;
+    }
+
+    .sitter-role {
+      font-size: 13px;
+      font-weight: 700;
+      color: var(--sun-deep);
+      margin-bottom: 12px;
+      text-transform: uppercase;
+      letter-spacing: 0.06em;
+    }
+
+    .sitter-bio {
+      font-size: 15px;
+      color: var(--muted);
+      line-height: 1.65;
+      margin-bottom: 16px;
+    }
+
+    .sitter-tags {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 8px;
+      margin-bottom: 16px;
+    }
+
+    .tag {
+      background: var(--bg);
+      border-radius: 100px;
+      padding: 5px 12px;
+      font-size: 13px;
+      font-weight: 700;
+      color: var(--text);
+      border: 1.5px solid var(--border);
+    }
+
+    .tag.qual {
+      background: #ECFDF5;
+      border-color: #A7F3D0;
+      color: #065F46;
+    }
+
+    .sitter-divider {
+      height: 1px;
+      background: var(--border);
+      margin: 16px 0;
+    }
+
+    .sitter-certs {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
+
+    .cert-badge {
+      display: flex;
+      align-items: center;
+      gap: 6px;
+      font-size: 13px;
+      font-weight: 700;
+      color: #065F46;
+    }
+
+    .cert-icon {
+      font-size: 16px;
+    }
+
+    /* ===========================
+       PRICING
+    =========================== */
+    .pricing {
+      background: white;
+    }
+
+    .pricing-cards {
+      display: flex;
+      flex-direction: column;
+      gap: 16px;
+    }
+
+    .price-card {
+      border-radius: var(--radius);
+      padding: 28px 24px;
+      border: 2px solid var(--border);
+      position: relative;
+      background: var(--card);
+    }
+
+    .price-card.featured {
+      border-color: var(--sun);
+      background: linear-gradient(160deg, #FFFBEB, #FEF9C3);
+    }
+
+    .price-card .badge {
+      position: absolute;
+      top: -12px;
+      left: 50%;
+      transform: translateX(-50%);
+      background: var(--sun);
+      color: var(--text);
+      font-size: 12px;
+      font-weight: 800;
+      padding: 4px 16px;
+      border-radius: 100px;
+      white-space: nowrap;
+    }
+
+    .price-emoji {
+      font-size: 36px;
+      margin-bottom: 12px;
+    }
+
+    .price-label {
+      font-size: 15px;
+      font-weight: 700;
+      color: var(--muted);
+      margin-bottom: 4px;
+    }
+
+    .price-amount {
+      font-size: 42px;
+      font-weight: 900;
+      line-height: 1;
+      margin-bottom: 4px;
+    }
+
+    .price-period {
+      font-size: 15px;
+      font-weight: 600;
+      color: var(--muted);
+      margin-bottom: 16px;
+    }
+
+    .price-features {
+      list-style: none;
+      display: flex;
+      flex-direction: column;
+      gap: 8px;
+    }
+
+    .price-features li {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      font-size: 15px;
+      font-weight: 600;
+    }
+
+    .price-features .check {
+      width: 20px;
+      height: 20px;
+      border-radius: 50%;
+      background: var(--green);
+      color: white;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 11px;
+      font-weight: 900;
+      flex-shrink: 0;
+    }
+
+    .pricing-note {
+      margin-top: 20px;
+      text-align: center;
+      font-size: 14px;
+      color: var(--muted);
+      font-weight: 600;
+    }
+
+    /* ===========================
+       BOOKING FORM
+    =========================== */
+    .booking {
+      background: linear-gradient(160deg, #BAE6FD 0%, #FEF9C3 100%);
+    }
+
+    .booking-card {
+      background: white;
+      border-radius: var(--radius);
+      box-shadow: var(--shadow-lg);
+      padding: 28px 20px 32px;
+    }
+
+    .form-section-title {
+      font-size: 13px;
+      font-weight: 800;
+      letter-spacing: 0.1em;
+      text-transform: uppercase;
+      color: var(--sky-deep);
+      margin: 28px 0 14px;
+      padding-top: 28px;
+      border-top: 1px solid var(--border);
+    }
+
+    .form-section-title:first-of-type {
+      margin-top: 0;
+      padding-top: 0;
+      border-top: none;
+    }
+
+    .field {
+      margin-bottom: 16px;
+    }
+
+    .field label {
+      display: block;
+      font-size: 14px;
+      font-weight: 700;
+      margin-bottom: 6px;
+      color: var(--text);
+    }
+
+    .field .required {
+      color: var(--coral);
+      margin-left: 2px;
+    }
+
+    .field input,
+    .field select,
+    .field textarea {
+      width: 100%;
+      padding: 14px 16px;
+      border: 2px solid var(--border);
+      border-radius: 12px;
+      font-family: 'Nunito', sans-serif;
+      font-size: 16px;
+      font-weight: 600;
+      color: var(--text);
+      background: var(--bg);
+      transition: border-color 0.15s, box-shadow 0.15s;
+      -webkit-appearance: none;
+      appearance: none;
+      outline: none;
+    }
+
+    .field input:focus,
+    .field select:focus,
+    .field textarea:focus {
+      border-color: var(--sky);
+      box-shadow: 0 0 0 3px rgba(56,189,248,0.15);
+      background: white;
+    }
+
+    .field textarea {
+      resize: vertical;
+      min-height: 88px;
+    }
+
+    .field-row {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 12px;
+    }
+
+    .child-toggle {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      margin-bottom: 16px;
+      cursor: pointer;
+    }
+
+    .toggle-switch {
+      position: relative;
+      width: 44px;
+      height: 26px;
+      flex-shrink: 0;
+    }
+
+    .toggle-switch input { opacity: 0; width: 0; height: 0; }
+
+    .toggle-slider {
+      position: absolute;
+      inset: 0;
+      background: var(--border);
+      border-radius: 100px;
+      transition: 0.2s;
+      cursor: pointer;
+    }
+
+    .toggle-slider::before {
+      content: '';
+      position: absolute;
+      width: 20px;
+      height: 20px;
+      left: 3px;
+      top: 3px;
+      background: white;
+      border-radius: 50%;
+      transition: 0.2s;
+      box-shadow: 0 1px 4px rgba(0,0,0,0.2);
+    }
+
+    .toggle-switch input:checked + .toggle-slider { background: var(--sky); }
+    .toggle-switch input:checked + .toggle-slider::before { transform: translateX(18px); }
+
+    .toggle-label {
+      font-size: 15px;
+      font-weight: 700;
+      color: var(--text);
+      user-select: none;
+    }
+
+    #child2-section {
+      background: var(--bg);
+      border-radius: 14px;
+      padding: 16px;
+      margin-bottom: 16px;
+    }
+
+    #child2-section.hidden { display: none; }
+
+    .price-preview {
+      background: linear-gradient(135deg, #FFFBEB, #FEF9C3);
+      border: 2px solid var(--sun);
+      border-radius: 14px;
+      padding: 16px 20px;
+      margin-bottom: 20px;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+    }
+
+    .price-preview-label {
+      font-size: 15px;
+      font-weight: 700;
+      color: var(--text);
+    }
+
+    .price-preview-amount {
+      font-size: 22px;
+      font-weight: 900;
+      color: var(--sun-deep);
+    }
+
+    .submit-btn {
+      width: 100%;
+      padding: 18px;
+      background: var(--sun);
+      color: var(--text);
+      font-family: 'Nunito', sans-serif;
+      font-size: 18px;
+      font-weight: 900;
+      border: none;
+      border-radius: 100px;
+      cursor: pointer;
+      box-shadow: 0 4px 20px rgba(251,191,36,0.45);
+      transition: transform 0.1s, box-shadow 0.15s;
+      margin-bottom: 14px;
+    }
+
+    .submit-btn:active {
+      transform: scale(0.97);
+      box-shadow: 0 2px 10px rgba(251,191,36,0.3);
+    }
+
+    .submit-btn:disabled {
+      opacity: 0.6;
+      cursor: not-allowed;
+    }
+
+    .form-disclaimer {
+      text-align: center;
+      font-size: 13px;
+      color: var(--muted);
+      font-weight: 600;
+      line-height: 1.5;
+    }
+
+    /* ===========================
+       SUCCESS STATE
+    =========================== */
+    #success-message {
+      display: none;
+      text-align: center;
+      padding: 32px 16px;
+    }
+
+    #success-message.show { display: block; }
+
+    .success-icon { font-size: 64px; margin-bottom: 16px; }
+    .success-title {
+      font-size: 24px;
+      font-weight: 900;
+      margin-bottom: 10px;
+    }
+
+    .success-text {
+      font-size: 16px;
+      color: var(--muted);
+      line-height: 1.7;
+    }
+
+    /* ===========================
+       PAYMENT SECTION
+    =========================== */
+    .payment {
+      background: white;
+      padding: 48px 24px;
+    }
+
+    .payment-card {
+      background: linear-gradient(160deg, #1C1917, #292524);
+      border-radius: var(--radius);
+      padding: 32px 24px;
+      color: white;
+      text-align: center;
+    }
+
+    .payment-icon { font-size: 40px; margin-bottom: 16px; }
+
+    .payment-title {
+      font-size: 22px;
+      font-weight: 900;
+      margin-bottom: 8px;
+    }
+
+    .payment-desc {
+      font-size: 15px;
+      color: rgba(255,255,255,0.65);
+      line-height: 1.65;
+      margin-bottom: 24px;
+    }
+
+    .payment-btn {
+      display: inline-block;
+      background: #635BFF;
+      color: white;
+      font-family: 'Nunito', sans-serif;
+      font-size: 16px;
+      font-weight: 800;
+      padding: 15px 32px;
+      border-radius: 100px;
+      border: none;
+      cursor: pointer;
+      width: 100%;
+      opacity: 0.7;
+      position: relative;
+    }
+
+    .payment-btn::after {
+      content: 'Available after booking confirmation';
+      display: block;
+      font-size: 12px;
+      font-weight: 600;
+      opacity: 0.8;
+      margin-top: 4px;
+    }
+
+    .payment-security {
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      gap: 6px;
+      margin-top: 16px;
+      font-size: 13px;
+      color: rgba(255,255,255,0.5);
+      font-weight: 600;
+    }
+
+    /* ===========================
+       FOOTER
+    =========================== */
+    footer {
+      background: var(--text);
+      color: white;
+      padding: 40px 24px 32px;
+      text-align: center;
+    }
+
+    .footer-logo {
+      font-size: 22px;
+      font-weight: 900;
+      margin-bottom: 4px;
+    }
+
+    .footer-logo span { color: var(--sun); }
+
+    .footer-tagline {
+      font-size: 14px;
+      color: rgba(255,255,255,0.5);
+      font-style: italic;
+      margin-bottom: 24px;
+      font-weight: 600;
+    }
+
+    .footer-links {
+      display: flex;
+      justify-content: center;
+      gap: 24px;
+      margin-bottom: 24px;
+    }
+
+    .footer-links a {
+      font-size: 14px;
+      font-weight: 700;
+      color: rgba(255,255,255,0.6);
+      transition: color 0.15s;
+    }
+
+    .footer-links a:hover { color: var(--sun); }
+
+    .footer-copy {
+      font-size: 13px;
+      color: rgba(255,255,255,0.3);
+      font-weight: 600;
+    }
+
+    /* ===========================
+       RESPONSIVE TWEAKS
+    =========================== */
+    @media (min-width: 480px) {
+      .hero h1 { font-size: 44px; }
+      .sitter-cards { flex-direction: row; }
+      .sitter-card { flex: 1; }
+      .pricing-cards { flex-direction: row; }
+      .price-card { flex: 1; }
+    }
+
+    @media (min-width: 640px) {
+      .about-cards { flex-direction: row; flex-wrap: wrap; }
+      .about-card { flex: 1; min-width: 220px; }
+    }
+  </style>
+</head>
+<body>
+
+  <!-- NAV -->
+  <nav>
+    <div class="nav-logo">
+      <span class="sun-icon">☀️</span>
+      <div class="nav-logo-text">Sunshine &amp; <span>Smile</span> Sitters</div>
+    </div>
+    <a href="#booking" class="nav-cta">Book Now</a>
+  </nav>
+
+  <!-- HERO -->
+  <section class="hero">
+    <div class="hero-badge">✨ Trusted Local Babysitters</div>
+    <h1>Sunshine &amp;<br /><span class="highlight">Smile</span> Sitters</h1>
+    <p class="hero-tagline">Trained to Care, Ready to Play.</p>
+    <p class="hero-desc">
+      Safe, certified, and full of energy — we give your kids the attention they deserve while you get the break you need.
+    </p>
+    <a href="#booking" class="hero-cta">Request to Book →</a>
+    <div class="hero-trust">
+      <div class="trust-pill"><span class="dot"></span> CPR Certified</div>
+      <div class="trust-pill"><span class="dot"></span> Red Cross Trained</div>
+      <div class="trust-pill"><span class="dot"></span> Locally Based</div>
+    </div>
+  </section>
+
+  <!-- ABOUT -->
+  <section class="about" id="about">
+    <p class="section-label">Why Families Love Us</p>
+    <h2 class="section-title">More than babysitters.<br />We're part of the family.</h2>
+    <p class="section-sub">We bring training, energy, and genuine love for kids to every job — so you can leave the house with complete peace of mind.</p>
+    <div class="about-cards">
+      <div class="about-card">
+        <div class="about-card-icon">🏥</div>
+        <div>
+          <div class="about-card-title">Fully Certified</div>
+          <div class="about-card-text">American Red Cross First Aid &amp; CPR certified. Safety is always our first priority.</div>
+        </div>
+      </div>
+      <div class="about-card">
+        <div class="about-card-icon">⭐</div>
+        <div>
+          <div class="about-card-title">Experienced</div>
+          <div class="about-card-text">Years of hands-on experience with kids of all ages — from toddlers to tweens.</div>
+        </div>
+      </div>
+      <div class="about-card">
+        <div class="about-card-icon">🎯</div>
+        <div>
+          <div class="about-card-title">Engaged &amp; Active</div>
+          <div class="about-card-text">We don't just sit — we play, create, read, and make every session genuinely fun.</div>
+        </div>
+      </div>
+      <div class="about-card">
+        <div class="about-card-icon">💬</div>
+        <div>
+          <div class="about-card-title">Always Communicating</div>
+          <div class="about-card-text">We confirm bookings fast and keep parents updated throughout the evening.</div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- SITTERS -->
+  <section class="sitters" id="sitters">
+    <p class="section-label">Meet the Sitters</p>
+    <h2 class="section-title">Your kids will be asking for us by name.</h2>
+    <p class="section-sub">We're real people who genuinely love spending time with kids — and it shows.</p>
+    <div class="sitter-cards">
+
+      <!-- Stella -->
+      <div class="sitter-card">
+        <div class="sitter-header stella">🌟</div>
+        <div class="sitter-body">
+          <div class="sitter-name">Stella</div>
+          <div class="sitter-role">Lead Sitter · 3+ Years Exp.</div>
+          <p class="sitter-bio">
+            Stella is an energetic and nurturing sitter who brings creativity and kindness to every family she works with. When she's not babysitting, you'll find her on the soccer field, on stage, or belting out her favorite songs.
+          </p>
+          <div class="sitter-tags">
+            <span class="tag">⚽ Soccer</span>
+            <span class="tag">🎭 National Youth Theater</span>
+            <span class="tag">🎵 Singing</span>
+            <span class="tag">🎨 Arts &amp; Crafts</span>
+          </div>
+          <div class="sitter-divider"></div>
+          <div class="sitter-tags">
+            <span class="tag qual">✅ Red Cross First Aid</span>
+            <span class="tag qual">✅ CPR Certified</span>
+            <span class="tag qual">✅ Background Check</span>
+          </div>
+        </div>
+      </div>
+
+      <!-- Lexi -->
+      <div class="sitter-card">
+        <div class="sitter-header lexi">💙</div>
+        <div class="sitter-body">
+          <div class="sitter-name">Lexi</div>
+          <div class="sitter-role">Lead Sitter · 2+ Years Exp.</div>
+          <p class="sitter-bio">
+            Lexi has a natural gift for connecting with kids of all ages. Patient, playful, and responsible, she makes every child feel safe and heard. Outside of babysitting, she loves swimming, reading, and playing outdoors.
+          </p>
+          <div class="sitter-tags">
+            <span class="tag">🏊 Swimming</span>
+            <span class="tag">📚 Reading</span>
+            <span class="tag">🧩 Board Games</span>
+            <span class="tag">🌿 Outdoor Play</span>
+          </div>
+          <div class="sitter-divider"></div>
+          <div class="sitter-tags">
+            <span class="tag qual">✅ Red Cross First Aid</span>
+            <span class="tag qual">✅ CPR Certified</span>
+            <span class="tag qual">✅ Background Check</span>
+          </div>
+        </div>
+      </div>
+
+    </div>
+  </section>
+
+  <!-- PRICING -->
+  <section class="pricing" id="pricing">
+    <p class="section-label">Simple Pricing</p>
+    <h2 class="section-title">Transparent rates, no surprises.</h2>
+    <p class="section-sub">Flat hourly rates. Always know what you're paying before you book.</p>
+    <div class="pricing-cards">
+
+      <div class="price-card">
+        <div class="price-emoji">👶</div>
+        <div class="price-label">One Child</div>
+        <div class="price-amount">$10</div>
+        <div class="price-period">per hour</div>
+        <ul class="price-features">
+          <li><span class="check">✓</span> 1-on-1 dedicated attention</li>
+          <li><span class="check">✓</span> Activities &amp; playtime</li>
+          <li><span class="check">✓</span> Bedtime routine if needed</li>
+          <li><span class="check">✓</span> Real-time parent updates</li>
+        </ul>
+      </div>
+
+      <div class="price-card featured">
+        <div class="badge">Most Popular</div>
+        <div class="price-emoji">👧👦</div>
+        <div class="price-label">Two Children</div>
+        <div class="price-amount">$15</div>
+        <div class="price-period">per hour</div>
+        <ul class="price-features">
+          <li><span class="check">✓</span> Both kids fully engaged</li>
+          <li><span class="check">✓</span> Group games &amp; activities</li>
+          <li><span class="check">✓</span> Bedtime routines</li>
+          <li><span class="check">✓</span> Real-time parent updates</li>
+        </ul>
+      </div>
+
+    </div>
+    <p class="pricing-note">💳 Flexible payment options available after booking confirmation.</p>
+  </section>
+
+  <!-- BOOKING FORM -->
+  <section class="booking" id="booking">
+    <p class="section-label">Request a Booking</p>
+    <h2 class="section-title">Let's find a time that works.</h2>
+    <p class="section-sub">Fill out the form below and we'll get back to you quickly to confirm your booking.</p>
+
+    <div class="booking-card">
+
+      <!-- Success Message -->
+      <div id="success-message">
+        <div class="success-icon">🎉</div>
+        <div class="success-title">Request Sent!</div>
+        <p class="success-text">Thanks! We received your booking request and will reach out within a few hours to confirm. Check your email for updates!</p>
+      </div>
+
+      <!-- The Form -->
+      <form id="booking-form" novalidate>
+
+        <!-- CONTACT INFO -->
+        <p class="form-section-title">Your Contact Information</p>
+
+        <div class="field">
+          <label>Parent / Guardian Name <span class="required">*</span></label>
+          <input type="text" name="parent_name" placeholder="Jane Smith" required autocomplete="name" />
+        </div>
+
+        <div class="field">
+          <label>Email Address <span class="required">*</span></label>
+          <input type="email" name="email" id="email-field" placeholder="jane@email.com" required autocomplete="email" />
+        </div>
+
+        <div class="field">
+          <label>Phone Number <span class="required">*</span></label>
+          <input type="tel" name="phone" placeholder="(555) 123-4567" required autocomplete="tel" />
+        </div>
+
+        <div class="field">
+          <label>Home Address / Area</label>
+          <input type="text" name="address" placeholder="Your neighborhood or city" autocomplete="street-address" />
+        </div>
+
+        <!-- DATE & TIME -->
+        <p class="form-section-title">Date &amp; Time</p>
+
+        <div class="field">
+          <label>Date <span class="required">*</span></label>
+          <input type="date" name="date" required />
+        </div>
+
+        <div class="field-row">
+          <div class="field">
+            <label>Start Time <span class="required">*</span></label>
+            <input type="time" name="start_time" required />
+          </div>
+          <div class="field">
+            <label>End Time <span class="required">*</span></label>
+            <input type="time" name="end_time" required />
+          </div>
+        </div>
+
+        <!-- CHILD 1 -->
+        <p class="form-section-title">Child Information</p>
+
+        <div class="field">
+          <label>Child 1 — First Name <span class="required">*</span></label>
+          <input type="text" name="child1_name" placeholder="e.g. Emma" required />
+        </div>
+
+        <div class="field">
+          <label>Child 1 — Age <span class="required">*</span></label>
+          <select name="child1_age" required>
+            <option value="">Select age</option>
+            <option>Under 1 year</option>
+            <option>1 year</option>
+            <option>2 years</option>
+            <option>3 years</option>
+            <option>4 years</option>
+            <option>5 years</option>
+            <option>6 years</option>
+            <option>7 years</option>
+            <option>8 years</option>
+            <option>9 years</option>
+            <option>10 years</option>
+            <option>11 years</option>
+            <option>12+ years</option>
+          </select>
+        </div>
+
+        <!-- CHILD 2 TOGGLE -->
+        <label class="child-toggle">
+          <div class="toggle-switch">
+            <input type="checkbox" id="add-child-2" />
+            <span class="toggle-slider"></span>
+          </div>
+          <span class="toggle-label">Add a second child (+$5/hr)</span>
+        </label>
+
+        <div id="child2-section" class="hidden">
+          <div class="field">
+            <label>Child 2 — First Name</label>
+            <input type="text" name="child2_name" placeholder="e.g. Noah" />
+          </div>
+          <div class="field">
+            <label>Child 2 — Age</label>
+            <select name="child2_age">
+              <option value="">Select age</option>
+              <option>Under 1 year</option>
+              <option>1 year</option>
+              <option>2 years</option>
+              <option>3 years</option>
+              <option>4 years</option>
+              <option>5 years</option>
+              <option>6 years</option>
+              <option>7 years</option>
+              <option>8 years</option>
+              <option>9 years</option>
+              <option>10 years</option>
+              <option>11 years</option>
+              <option>12+ years</option>
+            </select>
+          </div>
+        </div>
+
+        <!-- HEALTH & SPECIAL INFO -->
+        <p class="form-section-title">Health &amp; Special Information</p>
+
+        <div class="field">
+          <label>Allergies <span style="font-weight:400;color:var(--muted);">(food, environmental, other)</span></label>
+          <textarea name="allergies" placeholder="e.g. Peanut allergy — EpiPen is in the kitchen drawer. No known environmental allergies."></textarea>
+        </div>
+
+        <div class="field">
+          <label>Medical Conditions or Special Needs</label>
+          <textarea name="medical" placeholder="Any conditions the sitter should be aware of, medications, or special care instructions."></textarea>
+        </div>
+
+        <div class="field">
+          <label>Bedtime Routine / Other Notes</label>
+          <textarea name="notes" placeholder="e.g. Bedtime at 8pm, no TV after 7, loves the storybook on the nightstand..."></textarea>
+        </div>
+
+        <!-- PRICING PREVIEW -->
+        <div class="price-preview">
+          <div class="price-preview-label">💰 Estimated Rate</div>
+          <div class="price-preview-amount" id="price-display">$10 / hr</div>
+        </div>
+
+        <button type="submit" class="submit-btn" id="submit-btn">Send Booking Request ☀️</button>
+
+        <p class="form-disclaimer">
+          🔒 Your info is kept private and never shared.<br />
+          We'll reply within a few hours to confirm availability.
+        </p>
+
+      </form>
+    </div>
+  </section>
+
+  <!-- PAYMENT -->
+  <section class="payment" id="payment">
+    <p class="section-label">Secure Payment</p>
+    <h2 class="section-title">Pay easily and securely.</h2>
+    <p class="section-sub" style="margin-bottom:0;">After we confirm your booking, you'll receive a secure payment link via email.</p>
+
+    <div style="margin-top:28px;">
+      <div class="payment-card">
+        <div class="payment-icon">💳</div>
+        <div class="payment-title">Secure Online Payment</div>
+        <p class="payment-desc">
+          We use Stripe — the same payment technology trusted by Amazon, Google, and millions of businesses. Your card info is always encrypted and never stored by us.
+        </p>
+        <button class="payment-btn" disabled>
+          Pay with Stripe
+        </button>
+        <div class="payment-security">
+          🔒 256-bit SSL encryption &nbsp;·&nbsp; Powered by Stripe
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- FOOTER -->
+  <footer>
+    <div class="footer-logo">Sunshine &amp; <span>Smile</span> Sitters</div>
+    <div class="footer-tagline">"Trained to Care, Ready to Play."</div>
+    <div class="footer-links">
+      <a href="#about">About</a>
+      <a href="#sitters">Sitters</a>
+      <a href="#pricing">Pricing</a>
+      <a href="#booking">Book</a>
+    </div>
+    <div class="footer-copy">© 2025 Sunshine &amp; Smile Sitters. All rights reserved.</div>
+  </footer>
+
+  <script>
+    const OWNER_EMAIL = 'rschklair@gmail.com';
+
+    // Second child toggle
+    const toggle = document.getElementById('add-child-2');
+    const child2Section = document.getElementById('child2-section');
+    const priceDisplay = document.getElementById('price-display');
+
+    toggle.addEventListener('change', function () {
+      if (this.checked) {
+        child2Section.classList.remove('hidden');
+        priceDisplay.textContent = '$15 / hr';
+      } else {
+        child2Section.classList.add('hidden');
+        priceDisplay.textContent = '$10 / hr';
+      }
+    });
+
+    // Form submission — builds a mailto: link and opens native Mail app
+    const form = document.getElementById('booking-form');
+    const submitBtn = document.getElementById('submit-btn');
+    const successMsg = document.getElementById('success-message');
+
+    function val(name) {
+      const el = form.querySelector('[name="' + name + '"]');
+      return el ? el.value.trim() : '';
+    }
+
+    form.addEventListener('submit', function (e) {
+      e.preventDefault();
+
+      // Validation
+      const required = form.querySelectorAll('[required]');
+      let valid = true;
+      required.forEach(field => {
+        if (!field.value.trim()) {
+          field.style.borderColor = '#FB7185';
+          valid = false;
+        } else {
+          field.style.borderColor = '';
+        }
+      });
+
+      if (!valid) {
+        const first = form.querySelector('[style*="FB7185"]');
+        if (first) first.scrollIntoView({ behavior: 'smooth', block: 'center' });
+        return;
+      }
+
+      const twoKids = toggle.checked;
+      const rate    = twoKids ? '$15/hr (2 children)' : '$10/hr (1 child)';
+
+      const subject = encodeURIComponent('New Babysitting Request — Sunshine & Smile Sitters');
+
+      const body = encodeURIComponent([
+        '=== BOOKING REQUEST ===',
+        '',
+        '-- CONTACT --',
+        'Name:   ' + val('parent_name'),
+        'Email:  ' + val('email'),
+        'Phone:  ' + val('phone'),
+        'Area:   ' + (val('address') || 'Not provided'),
+        '',
+        '-- DATE & TIME --',
+        'Date:   ' + val('date'),
+        'Start:  ' + val('start_time'),
+        'End:    ' + val('end_time'),
+        '',
+        '-- CHILDREN --',
+        'Child 1: ' + val('child1_name') + ', Age: ' + val('child1_age'),
+        twoKids
+          ? 'Child 2: ' + (val('child2_name') || '—') + ', Age: ' + (val('child2_age') || '—')
+          : 'Child 2: N/A',
+        '',
+        '-- RATE --',
+        rate,
+        '',
+        '-- HEALTH & NOTES --',
+        'Allergies:   ' + (val('allergies') || 'None provided'),
+        'Medical:     ' + (val('medical') || 'None provided'),
+        'Other Notes: ' + (val('notes') || 'None'),
+      ].join('\n'));
+
+      window.location.href = 'mailto:' + OWNER_EMAIL
+        + '?subject=' + subject
+        + '&body=' + body;
+
+      // Show success screen after a short delay (Mail app opens in background on iPhone)
+      setTimeout(function () {
+        form.style.display = 'none';
+        successMsg.classList.add('show');
+        successMsg.scrollIntoView({ behavior: 'smooth', block: 'center' });
+      }, 800);
+    });
+
+    // Clear error border on re-input
+    form.querySelectorAll('input, select, textarea').forEach(field => {
+      field.addEventListener('input', () => { field.style.borderColor = ''; });
+    });
+  </script>
+
+</body>
+</html>
