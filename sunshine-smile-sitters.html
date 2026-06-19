@@ -1038,18 +1038,7 @@
       </div>
 
       <!-- The Form -->
-      <!--
-        SETUP INSTRUCTIONS:
-        1. Go to https://formspree.io and create a free account
-        2. Create a new form and get your form endpoint (looks like https://formspree.io/f/XXXXXXXX)
-        3. Replace "YOUR_FORMSPREE_ID" below with your actual form ID
-        4. Formspree will email booking requests directly to rschklair@gmail.com
-      -->
-      <form id="booking-form" action="https://formspree.io/f/YOUR_FORMSPREE_ID" method="POST" novalidate>
-
-        <!-- Hidden fields for Formspree -->
-        <input type="hidden" name="_subject" value="New Babysitting Booking Request - Sunshine & Smile Sitters" />
-        <input type="hidden" name="_replyto" id="hidden-reply-to" value="" />
+      <form id="booking-form" novalidate>
 
         <!-- CONTACT INFO -->
         <p class="form-section-title">Your Contact Information</p>
@@ -1180,8 +1169,6 @@
           <div class="price-preview-amount" id="price-display">$10 / hr</div>
         </div>
 
-        <input type="hidden" name="pricing" id="hidden-pricing" value="$10/hr (1 child)" />
-
         <button type="submit" class="submit-btn" id="submit-btn">Send Booking Request ☀️</button>
 
         <p class="form-disclaimer">
@@ -1230,38 +1217,37 @@
   </footer>
 
   <script>
+    const OWNER_EMAIL = 'rschklair@gmail.com';
+
     // Second child toggle
     const toggle = document.getElementById('add-child-2');
     const child2Section = document.getElementById('child2-section');
     const priceDisplay = document.getElementById('price-display');
-    const hiddenPricing = document.getElementById('hidden-pricing');
 
     toggle.addEventListener('change', function () {
       if (this.checked) {
         child2Section.classList.remove('hidden');
         priceDisplay.textContent = '$15 / hr';
-        hiddenPricing.value = '$15/hr (2 children)';
       } else {
         child2Section.classList.add('hidden');
         priceDisplay.textContent = '$10 / hr';
-        hiddenPricing.value = '$10/hr (1 child)';
       }
     });
 
-    // Mirror email to hidden reply-to field for Formspree
-    document.getElementById('email-field').addEventListener('input', function () {
-      document.getElementById('hidden-reply-to').value = this.value;
-    });
-
-    // Form submission
+    // Form submission — builds a mailto: link and opens native Mail app
     const form = document.getElementById('booking-form');
     const submitBtn = document.getElementById('submit-btn');
     const successMsg = document.getElementById('success-message');
 
-    form.addEventListener('submit', async function (e) {
+    function val(name) {
+      const el = form.querySelector('[name="' + name + '"]');
+      return el ? el.value.trim() : '';
+    }
+
+    form.addEventListener('submit', function (e) {
       e.preventDefault();
 
-      // Basic validation
+      // Validation
       const required = form.querySelectorAll('[required]');
       let valid = true;
       required.forEach(field => {
@@ -1274,37 +1260,58 @@
       });
 
       if (!valid) {
-        const firstInvalid = form.querySelector('[required]:invalid, [style*="FB7185"]');
-        if (firstInvalid) firstInvalid.scrollIntoView({ behavior: 'smooth', block: 'center' });
+        const first = form.querySelector('[style*="FB7185"]');
+        if (first) first.scrollIntoView({ behavior: 'smooth', block: 'center' });
         return;
       }
 
-      submitBtn.disabled = true;
-      submitBtn.textContent = 'Sending...';
+      const twoKids = toggle.checked;
+      const rate    = twoKids ? '$15/hr (2 children)' : '$10/hr (1 child)';
 
-      try {
-        const data = new FormData(form);
-        const response = await fetch(form.action, {
-          method: 'POST',
-          body: data,
-          headers: { 'Accept': 'application/json' }
-        });
+      const subject = encodeURIComponent('New Babysitting Request — Sunshine & Smile Sitters');
 
-        if (response.ok) {
-          form.style.display = 'none';
-          successMsg.classList.add('show');
-          successMsg.scrollIntoView({ behavior: 'smooth', block: 'center' });
-        } else {
-          throw new Error('Server error');
-        }
-      } catch (err) {
-        submitBtn.disabled = false;
-        submitBtn.textContent = 'Send Booking Request ☀️';
-        alert('Oops — something went wrong. Please try again or reach out directly by email.');
-      }
+      const body = encodeURIComponent([
+        '=== BOOKING REQUEST ===',
+        '',
+        '-- CONTACT --',
+        'Name:   ' + val('parent_name'),
+        'Email:  ' + val('email'),
+        'Phone:  ' + val('phone'),
+        'Area:   ' + (val('address') || 'Not provided'),
+        '',
+        '-- DATE & TIME --',
+        'Date:   ' + val('date'),
+        'Start:  ' + val('start_time'),
+        'End:    ' + val('end_time'),
+        '',
+        '-- CHILDREN --',
+        'Child 1: ' + val('child1_name') + ', Age: ' + val('child1_age'),
+        twoKids
+          ? 'Child 2: ' + (val('child2_name') || '—') + ', Age: ' + (val('child2_age') || '—')
+          : 'Child 2: N/A',
+        '',
+        '-- RATE --',
+        rate,
+        '',
+        '-- HEALTH & NOTES --',
+        'Allergies:   ' + (val('allergies') || 'None provided'),
+        'Medical:     ' + (val('medical') || 'None provided'),
+        'Other Notes: ' + (val('notes') || 'None'),
+      ].join('\n'));
+
+      window.location.href = 'mailto:' + OWNER_EMAIL
+        + '?subject=' + subject
+        + '&body=' + body;
+
+      // Show success screen after a short delay (Mail app opens in background on iPhone)
+      setTimeout(function () {
+        form.style.display = 'none';
+        successMsg.classList.add('show');
+        successMsg.scrollIntoView({ behavior: 'smooth', block: 'center' });
+      }, 800);
     });
 
-    // Re-enable field border on input after validation error
+    // Clear error border on re-input
     form.querySelectorAll('input, select, textarea').forEach(field => {
       field.addEventListener('input', () => { field.style.borderColor = ''; });
     });
